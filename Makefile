@@ -1,15 +1,23 @@
-NAME = a
-
+NAME = unit_tests
 SRC += main.c
+SRC += test.c
+OBJ = $(SRC:.c=.o)
+CFLAGS = -Wall -Wextra -g -I.
 
-OBJ += $(SRC:.c=.o)
+all: $(NAME)
 
-CFLAGS = -Wall
+$(NAME): $(OBJ)
+	gcc -o $(NAME) $(OBJ) -lcriterion --coverage
 
-all: $(OBJ)
-	gcc -o  $(NAME) $(OBJ)
+%.o: %.c
+	gcc $(CFLAGS) -c $< -o $@
 
-test_run:
-	make re
-	gcc -o unit_tests test.c $(SRC) -lcriterion --coverage
-	./unit_tests && gcovr --exclude tests/
+clean:
+	rm -f $(OBJ) $(NAME) *.gcno *.gcda
+
+fclean: clean
+
+re: fclean all
+
+test_run: re
+	./$(NAME)
